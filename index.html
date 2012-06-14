@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Libclang-python-tools by valhallasw</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Libclang-python-tools</h1>
+        <p>Python tools to make working with legacy C(++) code easier.</p>
+        <p class="view"><a href="https://github.com/valhallasw/libclang-python-tools">View the Project on GitHub <small>valhallasw/libclang-python-tools</small></a></p>
+        <ul>
+          <li><a href="https://github.com/valhallasw/libclang-python-tools/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/valhallasw/libclang-python-tools/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/valhallasw/libclang-python-tools">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>libclang-based globals describer</h1>
+
+<p>This is a simple python script to get a list of globals from a c/c++ file with the locations they are being used. Due to limitations in libclang, it doesn't show whether it's used in an assignment or not.</p>
+
+<h2>Example</h2>
+
+<p>This example is included as <a href="test.cpp">test.cpp</a>.</p>
+
+<div class="highlight">
+<pre><span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">k</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="n">a</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">b</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+    <span class="n">k</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+</div>
+
+
+<p>results in:</p>
+
+<pre><code>$ python test.py
+i at &lt;SourceLocation file 'test.cpp', line 1, column 5&gt;
+ &gt;  test.cpp:    5, in a(): i = 5;
+ &gt;  test.cpp:    9, in b(): int j = i;
+ &gt;  test.cpp:   10, in b(): k=i;
+----------------------------------------
+
+k at &lt;SourceLocation file 'test.cpp', line 2, column 5&gt;
+ &gt;  test.cpp:   10, in b(): k=i;
+----------------------------------------
+</code></pre>
+
+<h2>Requirements</h2>
+
+<p>libclang and its python bindings. In my case, I downloaded the <a href="http://llvm.org/releases/download.html">clang binaries</a>, and retrieved the python bindings from the <a href="http://llvm.org/svn/llvm-project/cfe/trunk/bindings/python">svn repository</a>.</p>
+
+<p>In the python bindings, I had to adapt</p>
+
+<pre><code>def get_cindex_library()
+</code></pre>
+
+<p>in clang/cindex.py to refer to the correct libclang.so; I extracted the clang binaries in a subdirectory of the python bindings, and used the following:</p>
+
+<div class="highlight">
+<pre>    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="n">dll</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">__file__</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s">"clang_package"</span><span class="p">,</span> <span class="s">"lib"</span><span class="p">,</span> <span class="s">"libclang.so"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="n">dll</span><span class="p">)</span>
+</pre>
+</div>
+
+
+<p>If your operating system has a working libclang.so, you should be able to use the python bindings without downloading the binaries &amp; without adapting the dll path.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/valhallasw">valhallasw</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
