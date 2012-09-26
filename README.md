@@ -39,20 +39,23 @@ k at <SourceLocation file 'test.cpp', line 2, column 5>
 
 Requirements
 ------------
-libclang and its python bindings. In my case, I downloaded the [clang binaries](http://llvm.org/releases/download.html), and retrieved the python bindings from the [svn repository](http://llvm.org/svn/llvm-project/cfe/trunk/bindings/python).
+libclang and its python bindings. 
 
-In the python bindings, I had to adapt
+Do-this-and-then-it-should-run
+------------------------------
+On Ubuntu 12.04 x64, at least. This will use clang release 31.
 
-    def get_cindex_library()
-
-in clang/cindex.py to refer to the correct libclang.so; I extracted the clang binaries in a subdirectory of the python bindings, and used the following:
-
-```python
-    import os
-    dll = os.path.join(os.path.split(__file__)[0], "clang_package", "lib", "libclang.so")
-    return cdll.LoadLibrary(dll)
+```bash
+    git clone https://github.com/valhallasw/libclang-python-tools.git
+    cd libclang-python-tools
+    svn co http://llvm.org/svn/llvm-project/cfe/branches/release_31/bindings/python/clang/
+    curl http://llvm.org/releases/3.1/clang+llvm-3.1-x86_64-linux-ubuntu_12.04.tar.gz | tar -xvz
+    LD_LIBRARY_PATH=$(clang+llvm-3.1-x86_64-linux-ubuntu_12.04/bin/llvm-config --libdir) python globals.py
 ```
 
-If your operating system has a working libclang.so, you should be able to use the python bindings without downloading the binaries & without adapting the dll path.
+On a different platform, select the relevant [clang binaries](http://llvm.org/releases/download.html), and select the python bindings that belong to that release (check the [branches in the svn repository](http://llvm.org/svn/llvm-project/cfe/branches/)).
+
+
+
 
 
