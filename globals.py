@@ -54,4 +54,9 @@ def main(file):
 	print "-" * 40
 	print ""
 
-main("test.cpp")
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) == 2:
+        main(sys.argv[1])
+    else:
+        main("test.cpp")
